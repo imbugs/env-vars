@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -66,6 +65,13 @@ import org.jenkins.util.variable.CyclicGraphDetector.CycleDetectedException;
 public class EnvVars extends TreeMap<String, String> {
     private static final long serialVersionUID = 1L;
     private static Logger     LOGGER           = Logger.getLogger(EnvVars.class.getName());
+    /** enable replace empty variable */
+    private boolean           enableEmpty      = false;
+
+    public EnvVars(boolean enableEmpty) {
+        this();
+        this.enableEmpty = enableEmpty;
+    }
 
     public EnvVars() {
         super(CaseInsensitiveComparator.INSTANCE);
@@ -99,7 +105,7 @@ public class EnvVars extends TreeMap<String, String> {
      * Handles <tt>PATH+XYZ</tt> notation.
      */
     public void override(String key, String value) {
-        if (value == null || value.length() == 0) {
+        if (value == null || (value.length() == 0 && !enableEmpty)) {
             remove(key);
             return;
         }
@@ -363,18 +369,11 @@ public class EnvVars extends TreeMap<String, String> {
         return Util.replaceMacro(s, this);
     }
 
-    public static void main(String[] args) {
-        Map<String, String> props = new HashMap<String, String>();
-        props.put("A", "val1");
-        props.put("B", "$A is good");
-        props.put("C", "${B} and best");
+    public boolean isEnableEmpty() {
+        return enableEmpty;
+    }
 
-        EnvVars.resolve(props);
-
-        System.out.println(props);
-        EnvVars envVars = new EnvVars(props);
-        String todo = "${C} is goo";
-        EnvVars envVarsx = envVars.overrideExpandingAll(null);
-        envVarsx.expand(todo);
+    public void setEnableEmpty(boolean enableEmpty) {
+        this.enableEmpty = enableEmpty;
     }
 }
