@@ -36,8 +36,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
-import com.alipay.aclinkelib.core.service.variable.CyclicGraphDetector.CycleDetectedException;
-
 /**
  * Environment variables.
  *
